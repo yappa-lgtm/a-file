@@ -10,9 +10,7 @@ from core.config import settings
 
 from api import router as api_router
 
-logging.basicConfig(
-    format=settings.logging.log_format
-)
+logging.basicConfig(format=settings.logging.log_format)
 
 main_app = FastAPI(lifespan=lifespan)
 

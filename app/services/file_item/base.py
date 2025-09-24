@@ -2,13 +2,18 @@ import os
 import re
 import urllib.parse
 from pathlib import Path
+from typing import Optional
 
 from fastapi import UploadFile
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import FileResponse
 
-from core.exceptions import PathException, FileItemNotFoundException, FileNotFoundException
+from core.exceptions import (
+    PathException,
+    FileItemNotFoundException,
+    FileNotFoundException,
+)
 from core.models import FileItem
 from core.schemas.file_item import FileItemRead, FileItemRename
 from utils.path import create_safe_file_path
@@ -22,11 +27,14 @@ class FileItemService:
 
         UPLOAD_PATH.mkdir(parents=True, exist_ok=True)
 
-    async def create(self, file: UploadFile, path: str) -> FileItemRead:
+    async def create(
+        self, file: UploadFile, path: str, filename: Optional[str]
+    ) -> FileItemRead:
         if not re.match(r"^/([A-Za-z0-9._-]+/?)*$", path):
             raise PathException(path=path, reason="Неправильний формат шляху")
 
         file_item = FileItem(
+            filename=filename,
             original_filename=file.filename,
             file_path=path,
             file_size=file.size,
@@ -67,14 +75,18 @@ class FileItemService:
             raise FileItemNotFoundException(file_id=file_id)
 
         filename_with_id = f"{file_item.id}.{file_item.file_extension}"
-        file_path = create_safe_file_path(UPLOAD_PATH, file_item.file_path, filename_with_id)
+        file_path = create_safe_file_path(
+            UPLOAD_PATH, file_item.file_path, filename_with_id
+        )
 
         if not file_path.exists():
-            raise FileNotFoundException(file_path=f"{file_item.file_path}/{filename_with_id}")
+            raise FileNotFoundException(
+                file_path=f"{file_item.file_path}/{filename_with_id}"
+            )
 
         filename = file_item.filename or file_item.original_filename
 
-        encoded_filename = urllib.parse.quote(filename.encode('utf-8'))
+        encoded_filename = urllib.parse.quote(filename.encode("utf-8"))
 
         return FileResponse(
             path=str(file_path),
@@ -82,7 +94,7 @@ class FileItemService:
             filename=filename,
             headers={
                 "Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"
-            }
+            },
         )
 
     async def rename(self, dto: FileItemRename) -> FileItemRead:
@@ -109,7 +121,9 @@ class FileItemService:
             raise FileItemNotFoundException(file_id=file_id)
 
         filename_with_id = f"{file_item.id}.{file_item.file_extension}"
-        file_path = create_safe_file_path(UPLOAD_PATH, file_item.file_path, filename_with_id)
+        file_path = create_safe_file_path(
+            UPLOAD_PATH, file_item.file_path, filename_with_id
+        )
 
         if file_path.exists():
             os.remove(file_path)

@@ -13,6 +13,7 @@ class FileValidationException(ApplicationException):
     def message(self):
         return f"Файл '{self.filename}' не валідний: {self.reason}"
 
+
 @dataclass
 class FileNotFoundException(ApplicationException):
     file_path: str = field(default=None)

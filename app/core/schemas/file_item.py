@@ -24,4 +24,3 @@ class FileItemRead(FileItem):
 class FileItemRename(BaseSchema):
     id: UUID4
     new_filename: str
-

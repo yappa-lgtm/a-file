@@ -2,11 +2,11 @@ from .logger import GunicornLogger
 
 
 def get_app_options(
-        host: str,
-        port: int,
-        timeout: int,
-        workers: int,
-        log_level: str,
+    host: str,
+    port: int,
+    timeout: int,
+    workers: int,
+    log_level: str,
 ) -> dict:
     return {
         "accesslog": "-",

@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from fastapi import APIRouter, Depends, UploadFile, File, Form
 from fastapi.responses import FileResponse
@@ -18,10 +19,11 @@ router = APIRouter(tags=["File Items"])
 async def create(
     file: UploadFile = File(...),
     path: str = Form(...),
+    filename: Optional[str] = Form(...),
     service: FileItemService = Depends(get_file_item_service),
 ):
     try:
-        result = await service.create(file=file, path=path)
+        result = await service.create(file=file, path=path, filename=filename)
         return result
     except ApplicationException as e:
         return e.to_json_response()

@@ -4,6 +4,7 @@ from pydantic import UUID4
 
 from core.exceptions import ApplicationException
 
+
 @dataclass
 class FileItemNotFoundException(ApplicationException):
     file_id: UUID4 = field(default=None)

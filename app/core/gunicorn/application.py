@@ -3,7 +3,7 @@ from gunicorn.app.base import BaseApplication
 
 
 class Application(BaseApplication):
-    def __init__(self, application : FastAPI, options: dict | None = None):
+    def __init__(self, application: FastAPI, options: dict | None = None):
         self.options = options or {}
         self.application = application
         super().__init__()

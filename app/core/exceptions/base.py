@@ -15,7 +15,4 @@ class ApplicationException(Exception):
         return {"message": self.message}
 
     def to_json_response(self):
-        return JSONResponse(
-            status_code=self.status_code,
-            content=self.to_dict()
-        )
+        return JSONResponse(status_code=self.status_code, content=self.to_dict())
